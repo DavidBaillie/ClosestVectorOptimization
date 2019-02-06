@@ -1,0 +1,7 @@
+C:\Users\Liam\source\repos\ShortestDistancePerformanceTest\ShortestDistancePerformanceTest\bin\Debug\ShortestDistancePerformanceTest.exe.config
+C:\Users\Liam\source\repos\ShortestDistancePerformanceTest\ShortestDistancePerformanceTest\bin\Debug\ShortestDistancePerformanceTest.exe
+C:\Users\Liam\source\repos\ShortestDistancePerformanceTest\ShortestDistancePerformanceTest\bin\Debug\ShortestDistancePerformanceTest.pdb
+C:\Users\Liam\source\repos\ShortestDistancePerformanceTest\ShortestDistancePerformanceTest\obj\Debug\ShortestDistancePerformanceTest.csprojAssemblyReference.cache
+C:\Users\Liam\source\repos\ShortestDistancePerformanceTest\ShortestDistancePerformanceTest\obj\Debug\ShortestDistancePerformanceTest.csproj.CoreCompileInputs.cache
+C:\Users\Liam\source\repos\ShortestDistancePerformanceTest\ShortestDistancePerformanceTest\obj\Debug\ShortestDistancePerformanceTest.exe
+C:\Users\Liam\source\repos\ShortestDistancePerformanceTest\ShortestDistancePerformanceTest\obj\Debug\ShortestDistancePerformanceTest.pdb
