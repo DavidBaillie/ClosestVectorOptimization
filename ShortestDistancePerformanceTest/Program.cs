@@ -5,65 +5,77 @@ namespace ShortestDistancePerformanceTest
 {
     class MainClass
     {
-        private Random random;
+        private Random random = new Random();
 
         /// <summary>
         /// Constructor
         /// </summary>
         public MainClass ()
         {
-            random = new Random();
+            //Generate test data
+            int testCount = 1000;
+            Result[] results = new Result[testCount];
+            for (int i = 0; i < testCount; i++)
+            {
+                results[i] = runTest(new Vector3(0, 0, 0), 1000, -1000000, 1000000);
+            }
 
-            runTest(new Vector3(0, 0, 0), 1000, -1000000, 1000000);
+            double averageStandard = 0;
+            double averageRevised = 0;
 
+            //Format and output
+            foreach (Result r in results)
+            {
+                averageStandard += r.standardTime;
+                averageRevised += r.revisedTime;
+            }
+            averageRevised /= 100;
+            averageStandard /= 100;
+
+            Console.WriteLine("--------------------------------------------------------");
+            Console.WriteLine("Average Standard Time : " + averageStandard);
+            Console.WriteLine("Average Revised Time  : " + averageRevised);
+            Console.WriteLine("Improvement Ratio: " + (averageStandard / averageRevised));
+
+            //Pause for reading output
             Console.ReadLine();
         }
 
-
-        private void runTest (Vector3 sourcePoint, int arraySize, double rangeMin, double rangeMax)
+        /// <summary>
+        /// Primary method for running a timed calculation check. Takes parameters for test and conducts test with return of results. 
+        /// </summary>
+        /// <param name="sourcePoint">Source Vector3 to find closest point to</param>
+        /// <param name="arraySize">Number of randomized points to generate for test</param>
+        /// <param name="rangeMin">Minimum value for randomized point</param>
+        /// <param name="rangeMax">Max value for randomized point</param>
+        /// <returns>Result struct holding outcome of single test</returns>
+        private Result runTest (Vector3 sourcePoint, int arraySize, double rangeMin, double rangeMax)
         {
             //Build an array of 1000 random Vector3's
-            Vector3[] randomizedPoints = new Vector3[arraySize];
-            randomizedPoints = generateRandomPosition(randomizedPoints, rangeMin, rangeMax);
+            Vector3[] randomizedPointsArray = new Vector3[arraySize];
+            randomizedPointsArray = generateRandomPosition(randomizedPointsArray, rangeMin, rangeMax);
             Vector3 source = sourcePoint;
 
-            Vector3 b;
-            Vector3 f;
+            Vector3 closestVectorbyStandard;
+            Vector3 closestVectorbyRevised;
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            b = getClosestPointFromArray_Brute(source, randomizedPoints);
+            closestVectorbyStandard = getClosestPointFromArray_Brute(source, randomizedPointsArray);
 
             sw.Stop();
-            double bruteTime = sw.Elapsed.TotalMilliseconds;
+            double standardTime = sw.Elapsed.TotalMilliseconds;
 
             sw = new Stopwatch();
             sw.Start();
 
-            f = getClosestPointFromArray_Fast(source, randomizedPoints);
+            closestVectorbyRevised = getClosestPointFromArray_Fast(source, randomizedPointsArray);
 
             sw.Stop();
-            double fastTime = sw.Elapsed.TotalMilliseconds;
+            double revisedTime = sw.Elapsed.TotalMilliseconds;
 
-
-            Console.WriteLine("Pythagorus Method Data:");
-            Console.WriteLine("Time: " + bruteTime);
-            Console.WriteLine("Vector: " + b.ToString());
-            Console.WriteLine("Distance: " + getPythagorusDistance(source, b));
-
-            Console.WriteLine("");
-
-            Console.WriteLine("Fast Method Data:");
-            Console.WriteLine("Time: " + fastTime);
-            Console.WriteLine("Vector: " + f.ToString());
-            Console.WriteLine("Distance: " + getPythagorusDistance(source, f));
-
-            Console.WriteLine("");
-
-            Console.WriteLine("Performance Increase: " + bruteTime / fastTime);
-
-            Console.WriteLine("-------------------------------------");
+            return new Result(standardTime, revisedTime);
         }
 
         /// <summary>
@@ -97,7 +109,7 @@ namespace ShortestDistancePerformanceTest
             {
                 if (Math.Abs(points[i].x) <= sum && Math.Abs(points[i].y) <= sum && Math.Abs(points[i].z) <= sum)
                 {
-                    temp = getPythagorusDistance(source, points[i]);
+                    temp = getRoughPytharusDistance(source, points[i]);
                     if (temp < bestDistance)
                     {
                         bestVector = points[i];
@@ -143,6 +155,18 @@ namespace ShortestDistancePerformanceTest
             return Math.Sqrt( Math.Pow((end.x - start.x), 2) + Math.Pow((end.y - start.y), 2) + Math.Pow((end.z - start.z), 2) );
         }
 
+        /// <summary>
+        /// Calculates a rough distance between two vector3's
+        /// </summary>
+        /// <param name="start">Starting Vector3</param>
+        /// <param name="end">Ending Vector3</param>
+        /// <returns>Distance between the start and end points</returns>
+        private double getRoughPytharusDistance (Vector3 start, Vector3 end)
+        {
+            return Math.Pow((end.x - start.x), 2) + Math.Pow((end.y - start.y), 2) + Math.Pow((end.z - start.z), 2);
+        }
+
+   
         /// <summary>
         /// Adds randomized Vector3's to provided array within the min and max range provided
         /// </summary>
@@ -199,6 +223,35 @@ namespace ShortestDistancePerformanceTest
         public override string ToString()
         {
             return "(" + x.ToString() + "/" + y.ToString() + "/" + z.ToString() + ")";
+        }
+    }
+
+    /// <summary>
+    /// Container to hold the outcome of each test conducted
+    /// </summary>
+    public struct Result
+    {
+        public double standardTime;
+        public double revisedTime;
+
+        /// <summary>
+        /// Constructor for building container.
+        /// </summary>
+        /// <param name="standardTime">Time taken this cycle using standard Pythagorean distance</param>
+        /// <param name="revisedTime">Time taken this cycle using the revised pythagorean distance</param>
+        public Result (double standardTime, double revisedTime)
+        {
+            this.standardTime = standardTime;
+            this.revisedTime = revisedTime;
+        }
+
+        /// <summary>
+        /// ToString Override for printing this struct
+        /// </summary>
+        /// <returns>String representation of String</returns>
+        public override String ToString ()
+        {
+            return ("(" + standardTime.ToString() + " / " + revisedTime.ToString() + ")");
         }
     }
 }
